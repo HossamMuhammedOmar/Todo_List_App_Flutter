@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Todo_List_App_Flutter/models/task_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -44,6 +45,27 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getTaskMapList() async {
     Database db = await this.db;
     final List<Map<String, dynamic>> result = await db.query(taskTable);
+    return result;
+  }
+
+  Future<List<TaskModel>> getTaskList() async {
+    final List<Map<String, dynamic>> taskMapList = await getTaskMapList();
+    final List<TaskModel> taskList = [];
+    taskMapList.forEach((taskMap) {
+      taskList.add(TaskModel.forMap(taskMap));
+    });
+    return taskList;
+  }
+
+  Future<int> insertTask(TaskModel task) async {
+    Database db = await this.db;
+    final int result = await db.insert(taskTable, task.toMap());
+    return result;
+  }
+
+  Future<int> updateTask(TaskModel task) async {
+    Database db = await this.db;
+    final int result = await db.update(taskTable, task.toMap());
     return result;
   }
 }
